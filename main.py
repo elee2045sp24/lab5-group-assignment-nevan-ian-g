@@ -16,12 +16,17 @@ class Paddle(pygame.sprite.Sprite):
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        self.speed = 0  # Initial speed
 
-    def move_up(self):
-        self.rect.y -= 5
+    def update(self):
+        # Update the position based on the speed
+        self.rect.y += self.speed
 
-    def move_down(self):
-        self.rect.y += 5
+        # Keep the paddle within the screen bounds
+        if self.rect.top < 0:
+            self.rect.top = 0
+        elif self.rect.bottom > SCREEN_HEIGHT:
+            self.rect.bottom = SCREEN_HEIGHT
 
 # Initialize Pygame
 pygame.init()
@@ -47,21 +52,26 @@ while running:
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
-                left_paddle.move_up()
+                left_paddle.speed = -5
             elif event.key == pygame.K_s:
-                left_paddle.move_down()
+                left_paddle.speed = 5
             elif event.key == pygame.K_UP:
-                right_paddle.move_up()
+                right_paddle.speed = -5
             elif event.key == pygame.K_DOWN:
-                right_paddle.move_down()
+                right_paddle.speed = 5
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_w or event.key == pygame.K_s:
+                left_paddle.speed = 0
+            elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                right_paddle.speed = 0
 
-    # Update
+    # Update the paddles
     all_sprites.update()
 
     # Clear the screen
     screen.fill(BLACK)
 
-    # Draw all sprites
+    # Draw the paddles
     all_sprites.draw(screen)
 
     # Update the display
