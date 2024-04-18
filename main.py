@@ -1,11 +1,10 @@
 import pygame
 import sys
 
-# Define some colors
+
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
-# Set the width and height of the screen [width, height]
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
@@ -28,6 +27,44 @@ class Paddle(pygame.sprite.Sprite):
         elif self.rect.bottom > SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
 
+class Ball(pygame.sprite.Sprite):
+    def __init__(self, radius, color, x_speed, y_speed):
+        super().__init__()
+        self.image = pygame.Surface([radius * 2, radius * 2])
+        self.image.fill(BLACK)  # Ball is initially black
+        self.image.set_colorkey(BLACK)  # Make black transparent
+        pygame.draw.circle(self.image, color, (radius, radius), radius)
+        self.rect = self.image.get_rect()
+        self.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        self.x_speed = x_speed
+        self.y_speed = y_speed
+
+    def update(self):
+        self.rect.x += self.x_speed
+        self.rect.y += self.y_speed
+
+        # Collision with top and bottom walls
+        if self.rect.top <= 0 or self.rect.bottom >= SCREEN_HEIGHT:
+            self.y_speed = -self.y_speed
+
+        # Collision with paddles
+        if pygame.sprite.spritecollide(self, all_sprites, False):
+            self.x_speed = -self.x_speed  # Reverse direction
+
+        # Collision with left and right walls (score)
+        if self.rect.left <= 0:
+            # Right player scores
+            # Reset ball position and direction
+            self.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+            self.x_speed = abs(self.x_speed)  # Reset speed
+        elif self.rect.right >= SCREEN_WIDTH:
+            # Left player scores
+            # Reset ball position and direction
+            self.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+            self.x_speed = -abs(self.x_speed)  # Reset speed
+
+
+
 # Initialize Pygame
 pygame.init()
 
@@ -39,9 +76,12 @@ pygame.display.set_caption("Pong")
 left_paddle = Paddle(50, SCREEN_HEIGHT // 2)
 right_paddle = Paddle(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2)
 
+# Create ball
+ball = Ball(10, WHITE, 5, 5)  # Radius, color, x_speed, y_speed
+
 # Group for sprites
 all_sprites = pygame.sprite.Group()
-all_sprites.add(left_paddle, right_paddle)
+all_sprites.add(left_paddle, right_paddle, ball)
 
 # Main loop
 running = True
@@ -65,7 +105,7 @@ while running:
             elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 right_paddle.speed = 0
 
-    # Update the paddles
+    # Update all objects
     all_sprites.update()
 
     # Clear the screen
