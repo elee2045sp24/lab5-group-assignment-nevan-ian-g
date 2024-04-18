@@ -142,8 +142,8 @@ while running:
             mp_draw.draw_landmarks(frame_rgb, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
             # Determine which hand (left or right) based on wrist position (x-coordinate)
-            wrist_x = hand_landmarks.landmark[0].x  # X-coordinate of wrist (landmark 0)
-            wrist_y = hand_landmarks.landmark[0].y  # Y-coordinate of wrist (landmark 0)
+            wrist_x = hand_landmarks.landmark[17].x  # X-coordinate of wrist (landmark 0)
+            wrist_y = hand_landmarks.landmark[17].y  # Y-coordinate of wrist (landmark 0)
 
             # Convert the wrist y-coordinate to screen height
             wrist_y_screen = int(wrist_y * SCREEN_HEIGHT)
