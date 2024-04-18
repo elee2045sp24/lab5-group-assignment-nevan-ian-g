@@ -65,7 +65,8 @@ class Score:
 
     def increase_score(self):
         self.score += 1
-        self.text_surface = self.font.render(str(self.score), True, WHITE)
+        self.text_surface = self.font.render(str(self.score), True, WHITE)  # Update text surface
+    
 
 
 # Initialize Pygame
@@ -83,8 +84,8 @@ right_paddle = Paddle(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2)
 ball = Ball()
 
 #score class instances  
-left_player_score = Score(SCREEN_WIDTH // 4, 20)
-right_player_score = Score(3 * SCREEN_WIDTH // 4, 20)
+left_player_score = Score(SCREEN_WIDTH // 2, 20)
+right_player_score = Score(3 * SCREEN_WIDTH // 2, 20)
 
 # Group for sprites
 all_sprites = pygame.sprite.Group()
@@ -117,8 +118,11 @@ while running:
     if pygame.sprite.spritecollide(ball, [left_paddle, right_paddle], False):
         ball.velocity.x = -ball.velocity.x
     
+    # Update scores
+    left_player_score.increase_score()
+    right_player_score.increase_score()
 
-    # Draw scores
+     # Draw scores
     screen.blit(left_player_score.text_surface, left_player_score.text_rect)
     screen.blit(right_player_score.text_surface, right_player_score.text_rect)
 
