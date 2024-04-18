@@ -1,6 +1,16 @@
+import cv2
+import mediapipe as mp
 import pygame
 import sys
+import random
 from pygame import Vector2
+
+#initialize hand tracking
+mp_hands = mp.solutions.hands
+hands = mp_hands.Hands(max_num_hands =2)
+mp_draw = mp.solutions.drawing_utils
+
+cap = cv2.VideoCapture(0)
 
 # Constants for colors and screen size
 WHITE = (255, 255, 255)
@@ -19,7 +29,7 @@ class Paddle(pygame.sprite.Sprite):
 
     def update(self):
         self.rect.move_ip(self.velocity)  # Move the paddle based on velocity
-        self.check_boundary()  # Ensure paddle stays within screen bounds
+        self.check_boundary()  # keeps paddle within screen bounds
 
     def check_boundary(self):
         if self.rect.top < 0:
@@ -34,16 +44,17 @@ class Ball(pygame.sprite.Sprite):
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-        self.velocity = pygame.Vector2(5, 5).normalize()  # Initial velocity vector
+        self.velocity_choices = [1, -1]
+        self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*50, random.choice(self.velocity_choices)*50).normalize()  #Generate sudo-random direction each start
 
     def update(self):
         self.rect.x += self.velocity.x  
         self.rect.y += self.velocity.y  
-        self.check_boundary()  # Ensure ball stays within screen bounds
+        self.check_boundary()  # keeps ball stays within screen bounds
 
     def reset_position(self):
         self.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-        self.velocity = pygame.Vector2(5, 5).normalize()  # Reset velocity
+        self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*10, random.choice(self.velocity_choices)*10).normalize()
 
     def check_boundary(self):
         if self.rect.top <= 0 or self.rect.bottom >= SCREEN_HEIGHT:
@@ -74,7 +85,7 @@ pygame.init()
 
 # Set up the screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Pong")
+pygame.display.set_caption(" Magic Pong")
 
 # Create paddles
 left_paddle = Paddle(50, SCREEN_HEIGHT // 2)
@@ -94,6 +105,17 @@ all_sprites.add(left_paddle, right_paddle, ball)
 # Main loop
 running = True
 while running:
+    # Capture frame from webcam
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    # Convert the frame to RGB
+    frame_rgb = cv2.cvtColor(cv2.flip(frame,1), cv2.COLOR_BGR2RGB)    #flip shows mirror image on cv window
+
+    # Process the frame with MediaPipe
+    results = hands.process(frame_rgb)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -114,6 +136,25 @@ while running:
     else:
         right_paddle.velocity.y = 0
 
+    #For loop used to find hands, draw them, and control paddles
+    if results.multi_hand_landmarks:
+        for hand_landmarks in results.multi_hand_landmarks:
+            mp_draw.draw_landmarks(frame_rgb, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+
+            # Determine which hand (left or right) based on wrist position (x-coordinate)
+            wrist_x = hand_landmarks.landmark[0].x  # X-coordinate of wrist (landmark 0)
+            wrist_y = hand_landmarks.landmark[0].y  # Y-coordinate of wrist (landmark 0)
+
+            # Convert the wrist y-coordinate to screen height
+            wrist_y_screen = int(wrist_y * SCREEN_HEIGHT)
+
+            if wrist_x < 0.5:
+                # Control left paddle if hand is on the left side
+                left_paddle.velocity.y += (wrist_y_screen - SCREEN_HEIGHT // 2)*.3          #multiply by 0.3 to reduced sensitivity
+            else:
+                # Control right paddle if hand is on the right side
+                right_paddle.velocity.y += (wrist_y_screen - SCREEN_HEIGHT // 2)*.3
+
     #collide with paddles
     if pygame.sprite.spritecollide(ball, [left_paddle, right_paddle], False):
         ball.velocity.x = -ball.velocity.x
@@ -132,8 +173,15 @@ while running:
     all_sprites.draw(screen)
     pygame.display.flip()
 
-    # Cap the frame rate
+    # Convert RGB frame back to BGR for display
+    frame_bgr = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
+
+    # Display the frame in OpenCV window (for reference)
+    cv2.imshow("Hand Tracking", frame_bgr)
+
     pygame.time.Clock().tick(60)
+
+
 
 # Quit Pygame
 pygame.quit()
