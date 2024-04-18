@@ -5,8 +5,8 @@ import sys
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+WIDTH = 800
+HEIGHT = 600
 
 class Paddle(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -24,60 +24,79 @@ class Paddle(pygame.sprite.Sprite):
         # Keep the paddle within the screen bounds
         if self.rect.top < 0:
             self.rect.top = 0
-        elif self.rect.bottom > SCREEN_HEIGHT:
-            self.rect.bottom = SCREEN_HEIGHT
+        elif self.rect.bottom > HEIGHT:
+            self.rect.bottom = HEIGHT
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, radius, color, x_speed, y_speed):
-        super().__init__()
-        self.image = pygame.Surface([radius * 2, radius * 2])
-        self.image.fill(BLACK)  # Ball is initially black
-        self.image.set_colorkey(BLACK)  # Make black transparent
-        pygame.draw.circle(self.image, color, (radius, radius), radius)
-        self.rect = self.image.get_rect()
-        self.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-        self.x_speed = x_speed
-        self.y_speed = y_speed
-
+    def __init__(self, posx, posy, radius, speed, color):
+        self.posx = posx
+        self.posy = posy
+        self.radius = radius
+        self.speed = speed
+        self.color = color
+        self.xFac = 1
+        self.yFac = -1
+        self.ball = pygame.draw.circle(
+            screen, self.color, (self.posx, self.posy), self.radius)
+        self.firstTime = 1
+ 
+    def display(self):
+        self.ball = pygame.draw.circle(
+            screen, self.color, (self.posx, self.posy), self.radius)
+ 
     def update(self):
-        self.rect.x += self.x_speed
-        self.rect.y += self.y_speed
-
-        # Collision with top and bottom walls
-        if self.rect.top <= 0 or self.rect.bottom >= SCREEN_HEIGHT:
-            self.y_speed = -self.y_speed
-
-        # Collision with paddles
-        if pygame.sprite.spritecollide(self, all_sprites, False):
-            self.x_speed = -self.x_speed  # Reverse direction
-
-        # Collision with left and right walls (score)
-        if self.rect.left <= 0:
-            # Right player scores
-            # Reset ball position and direction
-            self.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-            self.x_speed = abs(self.x_speed)  # Reset speed
-        elif self.rect.right >= SCREEN_WIDTH:
-            # Left player scores
-            # Reset ball position and direction
-            self.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-            self.x_speed = -abs(self.x_speed)  # Reset speed
-
-
+        self.posx += self.speed*self.xFac
+        self.posy += self.speed*self.yFac
+ 
+        # If the ball hits the top or bottom surfaces,
+        # then the sign of yFac is changed and it
+        # results in a reflection
+        if self.posy <= 0 or self.posy >= HEIGHT:
+            self.yFac *= -1
+ 
+        # If the ball touches the left wall for the first time,
+        # The firstTime is set to 0 and we return 1
+        # indicating that Geek2 has scored
+        # firstTime is set to 0 so that the condition is
+        # met only once and we can avoid giving multiple
+        # points to the player
+        if self.posx <= 0 and self.firstTime:
+            self.firstTime = 0
+            return 1
+        elif self.posx >= WIDTH and self.firstTime:
+            self.firstTime = 0
+            return -1
+        else:
+            return 0
+ 
+    # Used to reset the position of the ball
+    # to the center of the screen
+    def reset(self):
+        self.posx = WIDTH//2
+        self.posy = HEIGHT//2
+        self.xFac *= -1
+        self.firstTime = 1
+ 
+    # Used to reflect the ball along the X-axis
+    def hit(self):
+        self.xFac *= -1
+ 
+    def getRect(self):
+        return self.ball
 
 # Initialize Pygame
 pygame.init()
 
 # Set up the screen
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Pong")
 
 # Create paddles
-left_paddle = Paddle(50, SCREEN_HEIGHT // 2)
-right_paddle = Paddle(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2)
+left_paddle = Paddle(50, HEIGHT // 2)
+right_paddle = Paddle(WIDTH - 50, HEIGHT // 2)
 
 # Create ball
-ball = Ball(10, WHITE, 5, 5)  # Radius, color, x_speed, y_speed
+ball = Ball(5,5,5,5,WHITE)  # Radius, color, x_speed, y_speed
 
 # Group for sprites
 all_sprites = pygame.sprite.Group()
