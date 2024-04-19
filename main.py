@@ -10,7 +10,7 @@ mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(max_num_hands =2)
 mp_draw = mp.solutions.drawing_utils
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0)                   #initalize camera
 
 # Constants for colors and screen size
 WHITE = (255, 255, 255)
@@ -69,22 +69,26 @@ class Ball(pygame.sprite.Sprite):
 class Score:
     def __init__(self, x, y):
         self.score = 0
-        self.font = pygame.font.Font(None, 36)
+        self.font = pygame.font.Font("game_font.ttf", 36)
         self.text_surface = self.font.render(str(self.score), True, WHITE)
         self.text_rect = self.text_surface.get_rect()
         self.text_rect.topleft = (x, y)
 
     def increase_score(self):
         self.score += 1
-        self.text_surface = self.font.render(str(self.score), True, WHITE)  # Update text surface
-    
+        self.text_surface = self.font.render(f"Score: {str(self.score)}", True, WHITE)  # Update text surface
+
+#draw text on screen
+def draw_text(text, font, text_col, x, y):            
+    img = font.render(text, True, text_col)
+    screen.blit(img, (x,y))    
 
 
 # Initialize Pygame
 pygame.init()
 
 # Set up the screen
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SCALED | pygame.RESIZABLE, vsync =1)
 pygame.display.set_caption(" Magic Pong")
 
 # Create paddles
@@ -142,13 +146,13 @@ while running:
             mp_draw.draw_landmarks(frame_rgb, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
             # Determine which hand (left or right) based on wrist position (x-coordinate)
-            wrist_x = hand_landmarks.landmark[17].x  # X-coordinate of wrist (landmark 0)
-            wrist_y = hand_landmarks.landmark[17].y  # Y-coordinate of wrist (landmark 0)
+            hand_x = hand_landmarks.landmark[17].x  # X-coordinate of middle of backside of hand (landmark 17 via mediapipe documentation)
+            hand_y = hand_landmarks.landmark[17].y  # Y-coordinate of middle of backside of hand (landmark 17 via mediapipe documentation)
 
             # Convert the wrist y-coordinate to screen height
-            wrist_y_screen = int(wrist_y * SCREEN_HEIGHT)
+            wrist_y_screen = int(hand_y * SCREEN_HEIGHT)
 
-            if wrist_x < 0.5:
+            if hand_x < 0.5:
                 # Control left paddle if hand is on the left side
                 left_paddle.velocity.y += (wrist_y_screen - SCREEN_HEIGHT // 2)*.3          #multiply by 0.3 to reduced sensitivity
             else:
