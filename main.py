@@ -40,6 +40,7 @@ cap = cv2.VideoCapture(0)  #initalize camera
 # Constants for colors and screen size
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+GREEN = (0, 255, 0)
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
@@ -72,11 +73,12 @@ class Score:
         self.font = pygame.font.Font("game_font.ttf", 36)
         self.text_surface = self.font.render(str(self.score), True, WHITE)
         self.text_rect = self.text_surface.get_rect(topleft=(x, y))
-
+        
     def increase_score(self):
         self.score += 1
         self.text_surface = self.font.render(f"Score: {str(self.score)}", True, WHITE)
         self.text_rect = self.text_surface.get_rect(topleft=self.text_rect.topleft)
+        
 
 # initialize score
 right_player_score = Score(3 * SCREEN_WIDTH // 2, 20)
@@ -134,13 +136,11 @@ def powerUpCheck(Paddle):
 #draw text on screen
 def draw_text(text, font, text_col, x, y):            
     img = font.render(text, True, text_col)
-    screen.blit(img, (x,y))    
-
-
-
+    screen.blit(img, (x,y))   
+ 
 # Set up the screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SCALED | pygame.RESIZABLE, vsync =1)
-pygame.display.set_caption(" Magic Pong")
+pygame.display.set_caption("Magic Pong")
 
 # Create paddles
 left_paddle = Paddle(50, SCREEN_HEIGHT // 2)
@@ -148,7 +148,6 @@ right_paddle = Paddle(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2)
 
 # Create ball
 ball = Ball()
-
 
 # Group for sprites
 all_sprites = pygame.sprite.Group()
@@ -218,9 +217,24 @@ while running:
     #Power Ups
     powerUpCheck(left_paddle)
     
+<<<<<<< HEAD
     # Draw scores
     screen.blit(left_player_score.text_surface, left_player_score.text_rect)
     screen.blit(right_player_score.text_surface, right_player_score.text_rect)
+=======
+
+    font = pygame.font.Font(None, 36)
+
+    left_score_text = f"Left Score: {left_player_score.score}"
+    left_score_text_surface = font.render(left_score_text, True, GREEN)
+    right_score_text = f"Right Score: {right_player_score.score}"
+    right_score_text_surface = font.render(right_score_text, True, GREEN)
+
+    screen.blit(left_score_text_surface, (500,500))
+    screen.blit(right_score_text_surface, (200,200))
+
+    #screen.blit(right_player_score)
+>>>>>>> 101d93f3d4ae4ca90e275b6b5cb12d61e720be49
 
     print(left_player_score.score)
     print(right_player_score.score)
@@ -238,8 +252,6 @@ while running:
     cv2.imshow("Hand Tracking", frame_bgr)
 
     pygame.time.Clock().tick(60)
-
-
 
 # Quit Pygame
 pygame.quit()
