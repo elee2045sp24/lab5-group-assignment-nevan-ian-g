@@ -45,7 +45,7 @@ class Ball(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         self.velocity_choices = [1, -1]
-        self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*50, random.choice(self.velocity_choices)*50).normalize()  #Generate sudo-random direction each start
+        self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*3, random.choice(self.velocity_choices)*3) #.normalize()  #Generate sudo-random direction each start
 
     def update(self):
         self.rect.x += self.velocity.x  
@@ -54,7 +54,7 @@ class Ball(pygame.sprite.Sprite):
 
     def reset_position(self):
         self.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-        self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*10, random.choice(self.velocity_choices)*10).normalize()
+        self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*3, random.choice(self.velocity_choices)*3) #.normalize()
 
     def check_boundary(self):
         if self.rect.top <= 0 or self.rect.bottom >= SCREEN_HEIGHT:
