@@ -2,7 +2,7 @@ import paho.mqtt.client as mqtt
 import cv2
 import mediapipe as mp
 import pygame
-import sys
+import sys, time
 import random
 from pygame import Vector2
 
@@ -12,9 +12,9 @@ powUp2_topic = "ugaelee2045sp24/ikg61117/powUp2"
 def on_message(client_obj, userdata, message):
     print(f"Message received: {message.payload.decode('utf8')}")
     if message.topic == powUp1_topic:
-        pass #player one power up variable = true
+        left_paddle.powerUp = True
     if message.topic == powUp2_topic:
-        pass #player two power up variable = true
+        right_paddle.powerUp = True
 
 client_id = "123"                                                                                   #MQTT setup
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1, client_id)
@@ -53,6 +53,8 @@ class Paddle(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.velocity = pygame.Vector2(0, 0)  # Velocity vector for movement
+        self.powerUp = False
+        self.number_power_ups = 2
 
     def update(self):
         self.rect.move_ip(self.velocity)  # Move the paddle based on velocity
@@ -110,6 +112,24 @@ class Ball(pygame.sprite.Sprite):
             left_player_score.increase_score()
             self.reset_position()
 
+#power up function
+def powerUpCheck(Paddle):
+    if Paddle.powerUp == True:
+        start_time = time.time()
+        while time.time() - start_time < 10:
+            Paddle.number_power_ups -= 1
+            Paddle.image = pygame.Surface([10,200])
+            Paddle.image.fill(WHITE)
+            Paddle.rect = Paddle.image.get_rect()
+        #Paddle.rect.center = 
+        # if time.time() - start_timer >= 5:
+        #     Paddle.image = pygame.Surface([10,100])
+        #     Paddle.image.fill(WHITE)
+        #     Paddle.rect = Paddle.image.get_rect()
+        #     Paddle.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        #     start_timer = time.time()
+
+        Paddle.powerUp = False
 
 #draw text on screen
 def draw_text(text, font, text_col, x, y):            
@@ -147,6 +167,10 @@ while running:
 
     # Process the frame with MediaPipe
     results = hands.process(frame_rgb)
+
+    #PowerUp logic
+    if left_paddle.powerUp == True | right_paddle.powerUp ==True:
+        start_timer = time.time()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -190,8 +214,11 @@ while running:
     #collide with paddles
     if pygame.sprite.spritecollide(ball, [left_paddle, right_paddle], False):
         ball.velocity.x = -ball.velocity.x
+
+    #Power Ups
+    powerUpCheck(left_paddle)
     
-     # Draw scores
+    # Draw scores
     screen.blit(left_player_score.text_surface, left_player_score.text_rect)
     screen.blit(right_player_score.text_surface, right_player_score.text_rect)
 

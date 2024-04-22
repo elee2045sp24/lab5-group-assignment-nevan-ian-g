@@ -6,7 +6,7 @@ const char broker[] = "mqtt.ugavel.com";
 int mqtt_port = 1883;
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
-const char powUp_topic[] = "ugaelee2045sp24/ikg61117/powUp";
+const char powUp1_topic[] = "ugaelee2045sp24/ikg61117/powUp1";
 
 void setup() {
   pinMode(4, OUTPUT); // Set HOLD pin 04 as output
@@ -22,7 +22,7 @@ void setup() {
   mqttClient.onMessage(onMqttMessage);
   mqttClient.setUsernamePassword("class_user", "class_password");
   mqttClient.connect(broker, mqtt_port);
-  mqttClient.subscribe(fire_topic);
+  mqttClient.subscribe(powUp1_topic);
 
   Serial.println("Setup finished");
 
@@ -45,7 +45,7 @@ void onMqttMessage(int messageSize) {
   Serial.print("', length ");
   Serial.print(messageSize);
   Serial.println(" bytes:");
-  if (mqttClient.messageTopic() == fire_topic) {
+  if (mqttClient.messageTopic() == powUp1_topic) {
       Serial.println(mqttClient.readString()); 
   }
 }
