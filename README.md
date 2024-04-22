@@ -1,4 +1,4 @@
-· A project title: Pong Extended
+· A project title: Magic Pong
 
 · Nevan Mukherjee, Ian Garrison
 
