@@ -10,13 +10,20 @@ mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(max_num_hands =2)
 mp_draw = mp.solutions.drawing_utils
 
-cap = cv2.VideoCapture(0)                   #initalize camera
+
+# Initialize Pygame
+pygame.init()
+
+cap = cv2.VideoCapture(0)  #initalize camera
+
 
 # Constants for colors and screen size
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
+
+
 
 class Paddle(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -36,6 +43,23 @@ class Paddle(pygame.sprite.Sprite):
             self.rect.top = 0
         elif self.rect.bottom > SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
+
+class Score:
+    def __init__(self, x, y):
+        self.score = 0
+        self.font = pygame.font.Font("game_font.ttf", 36)
+        self.text_surface = self.font.render(str(self.score), True, WHITE)
+        self.text_rect = self.text_surface.get_rect(topleft=(x, y))
+
+    def increase_score(self):
+        self.score += 1
+        self.text_surface = self.font.render(f"Score: {str(self.score)}", True, WHITE)
+        self.text_rect = self.text_surface.get_rect(topleft=self.text_rect.topleft)
+
+# initialize score
+right_player_score = Score(3 * SCREEN_WIDTH // 2, 20)
+left_player_score = Score(SCREEN_WIDTH // 2, 20)
+
 
 class Ball(pygame.sprite.Sprite):
     def __init__(self):
@@ -66,17 +90,6 @@ class Ball(pygame.sprite.Sprite):
             left_player_score.increase_score()
             self.reset_position()
 
-class Score:
-    def __init__(self, x, y):
-        self.score = 0
-        self.font = pygame.font.Font("game_font.ttf", 36)
-        self.text_surface = self.font.render(str(self.score), True, WHITE)
-        self.text_rect = self.text_surface.get_rect()
-        self.text_rect.topleft = (x, y)
-
-    def increase_score(self):
-        self.score += 1
-        self.text_surface = self.font.render(f"Score: {str(self.score)}", True, WHITE)  # Update text surface
 
 #draw text on screen
 def draw_text(text, font, text_col, x, y):            
@@ -84,8 +97,6 @@ def draw_text(text, font, text_col, x, y):
     screen.blit(img, (x,y))    
 
 
-# Initialize Pygame
-pygame.init()
 
 # Set up the screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SCALED | pygame.RESIZABLE, vsync =1)
@@ -98,9 +109,6 @@ right_paddle = Paddle(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2)
 # Create ball
 ball = Ball()
 
-#score class instances  
-left_player_score = Score(SCREEN_WIDTH // 2, 20)
-right_player_score = Score(3 * SCREEN_WIDTH // 2, 20)
 
 # Group for sprites
 all_sprites = pygame.sprite.Group()
@@ -163,13 +171,12 @@ while running:
     if pygame.sprite.spritecollide(ball, [left_paddle, right_paddle], False):
         ball.velocity.x = -ball.velocity.x
     
-    # Update scores
-    left_player_score.increase_score()
-    right_player_score.increase_score()
-
      # Draw scores
     screen.blit(left_player_score.text_surface, left_player_score.text_rect)
     screen.blit(right_player_score.text_surface, right_player_score.text_rect)
+
+    print(left_player_score.score)
+    print(right_player_score.score)
 
     #Clear screen, update and draw objects
     all_sprites.update()
