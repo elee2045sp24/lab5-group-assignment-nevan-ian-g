@@ -1,9 +1,25 @@
+import paho.mqtt.client as mqtt
 import cv2
 import mediapipe as mp
 import pygame
 import sys
 import random
 from pygame import Vector2
+
+#initialize MQTT
+powUp_topic = "ugaelee2045sp24/ikg61117/powUp"
+def on_message(client_obj, userdata, message):
+    print(f"Message received: {message.payload.decode('utf8')}")
+    if message.topic == powUp_topic:
+        pass
+
+client_id = "123"                                                                                   #MQTT setup
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1, client_id)
+client.username_pw_set("class_user", "class_password")
+client.connect("mqtt.ugavel.com")
+client.on_message = on_message
+client.subscribe(powUp_topic)
+client.loop_start()
 
 #initialize hand tracking
 mp_hands = mp.solutions.hands
