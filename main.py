@@ -43,6 +43,8 @@ BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
+#Font
+game_font = pygame.font.Font("game_font.ttf", 15) 
 
 
 
@@ -217,33 +219,30 @@ while running:
     #Power Ups
     powerUpCheck(left_paddle)
     
-<<<<<<< HEAD
-    # Draw scores
-    screen.blit(left_player_score.text_surface, left_player_score.text_rect)
-    screen.blit(right_player_score.text_surface, right_player_score.text_rect)
-=======
+    # # Draw scores                                                                     Alternate code working
+    # screen.blit(left_player_score.text_surface, left_player_score.text_rect)
+    # screen.blit(right_player_score.text_surface, right_player_score.text_rect)
 
-    font = pygame.font.Font(None, 36)
+    # font = pygame.font.Font(None, 36)
 
-    left_score_text = f"Left Score: {left_player_score.score}"
-    left_score_text_surface = font.render(left_score_text, True, GREEN)
-    right_score_text = f"Right Score: {right_player_score.score}"
-    right_score_text_surface = font.render(right_score_text, True, GREEN)
+    # left_score_text = f"Left Score: {left_player_score.score}"
+    # left_score_text_surface = font.render(left_score_text, True, GREEN)
+    # right_score_text = f"Right Score: {right_player_score.score}"
+    # right_score_text_surface = font.render(right_score_text, True, GREEN)
 
-    screen.blit(left_score_text_surface, (500,500))
-    screen.blit(right_score_text_surface, (200,200))
-
-    #screen.blit(right_player_score)
->>>>>>> 101d93f3d4ae4ca90e275b6b5cb12d61e720be49
-
-    print(left_player_score.score)
-    print(right_player_score.score)
+    # screen.blit(left_score_text_surface, (500,500))
+    # screen.blit(right_score_text_surface, (200,200))
 
     #Clear screen, update and draw objects
-    all_sprites.update()
     screen.fill(BLACK)
+    
+    #Draw Text
+    draw_text(f"Player 1 Score: {left_player_score.score}", game_font, WHITE, 10,10)
+    draw_text(f"Player 2 Score: {right_player_score.score}", game_font, WHITE, 520, 10)
+
+    all_sprites.update()
     all_sprites.draw(screen)
-    pygame.display.flip()
+    
 
     # Convert RGB frame back to BGR for display
     frame_bgr = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
@@ -252,6 +251,7 @@ while running:
     cv2.imshow("Hand Tracking", frame_bgr)
 
     pygame.time.Clock().tick(60)
+    pygame.display.flip()
 
 # Quit Pygame
 pygame.quit()
