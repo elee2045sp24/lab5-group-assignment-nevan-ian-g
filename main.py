@@ -95,7 +95,9 @@ class Ball(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         self.velocity_choices = [1, -1]
-        self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*3, random.choice(self.velocity_choices)*3) #.normalize()  #Generate sudo-random direction each start
+        self.velocity_magnitude_x = 3
+        self.velocity_magnitude_y = 3
+        self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*(self.velocity_magnitude_x), random.choice(self.velocity_choices)*(self.velocity_magnitude_y)) #.normalize()  #Generate sudo-random direction each start
 
     def update(self):
         self.rect.x += self.velocity.x  
@@ -104,7 +106,7 @@ class Ball(pygame.sprite.Sprite):
 
     def reset_position(self):
         self.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-        self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*3, random.choice(self.velocity_choices)*3) #.normalize()
+        self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*(self.velocity_magnitude_x), random.choice(self.velocity_choices)*(self.velocity_magnitude_y)) #.normalize()
 
     def check_boundary(self):
         if self.rect.top <= 0 or self.rect.bottom >= SCREEN_HEIGHT:
@@ -115,6 +117,27 @@ class Ball(pygame.sprite.Sprite):
         elif self.rect.right >= SCREEN_WIDTH:
             left_player_score.increase_score()
             self.reset_position()
+
+# Create ball
+ball = Ball()
+
+# Define Power-up Class
+class PowerUp:
+    def __init__(self, name):
+        self.name = name
+
+    def apply_effect(self, game):
+        pass  # Implement this method in subclasses
+
+# Define specific power-up classes
+#class IncreasePaddleSize(PowerUp):
+#    def apply_effect(self, game):
+ #       game.left_paddle.size += 1
+
+class SpeedUpBall(PowerUp):
+    def apply_effect(self, game):
+        game.velocity_magnitude_x *= 50  # Increase ball speed
+        game.velocity_magnitude_y *= 50
 
 #power up function
 def powerUpCheck(Paddle):
@@ -148,8 +171,7 @@ pygame.display.set_caption("Magic Pong")
 left_paddle = Paddle(50, SCREEN_HEIGHT // 2)
 right_paddle = Paddle(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2)
 
-# Create ball
-ball = Ball()
+
 
 # Group for sprites
 all_sprites = pygame.sprite.Group()
@@ -219,19 +241,13 @@ while running:
     #Power Ups
     powerUpCheck(left_paddle)
     
-    # # Draw scores                                                                     Alternate code working
-    # screen.blit(left_player_score.text_surface, left_player_score.text_rect)
-    # screen.blit(right_player_score.text_surface, right_player_score.text_rect)
+    # Create an array of power-ups
+    power_ups = [SpeedUpBall("Speed Up Ball")]
 
-    # font = pygame.font.Font(None, 36)
-
-    # left_score_text = f"Left Score: {left_player_score.score}"
-    # left_score_text_surface = font.render(left_score_text, True, GREEN)
-    # right_score_text = f"Right Score: {right_player_score.score}"
-    # right_score_text_surface = font.render(right_score_text, True, GREEN)
-
-    # screen.blit(left_score_text_surface, (500,500))
-    # screen.blit(right_score_text_surface, (200,200))
+    # Randomly select a power-up and apply its effect
+    # Randomly select a power-up and apply its effect
+    selected_power_up = random.choice(power_ups)
+    selected_power_up.apply_effect(ball)  # Apply power-up effect
 
     #Clear screen, update and draw objects
     screen.fill(BLACK)
