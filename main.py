@@ -30,12 +30,10 @@ mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(max_num_hands =2)
 mp_draw = mp.solutions.drawing_utils
 
-
 # Initialize Pygame
 pygame.init()
 
 cap = cv2.VideoCapture(0)  #initalize camera
-
 
 # Constants for colors and screen size
 WHITE = (255, 255, 255)
@@ -45,8 +43,6 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 #Font
 game_font = pygame.font.Font("game_font.ttf", 15) 
-
-
 
 class Paddle(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -143,20 +139,18 @@ class SpeedUpBall(PowerUp):
 def powerUpCheck(Paddle):
     if Paddle.powerUp == True:
         start_time = time.time()
-        while time.time() - start_time < 10:
-            Paddle.number_power_ups -= 1
-            Paddle.image = pygame.Surface([10,200])
+        Paddle.number_power_ups -= 1
+        Paddle.image = pygame.Surface([10,200])
+        Paddle.image.fill(WHITE)
+        Paddle.rect = Paddle.image.get_rect()
+        #Paddle.rect.center = 
+        print (start_time - time.time())
+        if (time.time() - start_time) >= 5:
+            Paddle.image = pygame.Surface([10,100])
             Paddle.image.fill(WHITE)
             Paddle.rect = Paddle.image.get_rect()
-        #Paddle.rect.center = 
-        # if time.time() - start_timer >= 5:
-        #     Paddle.image = pygame.Surface([10,100])
-        #     Paddle.image.fill(WHITE)
-        #     Paddle.rect = Paddle.image.get_rect()
-        #     Paddle.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-        #     start_timer = time.time()
-
-        Paddle.powerUp = False
+            Paddle.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+            Paddle.powerUp = False      
 
 #draw text on screen
 def draw_text(text, font, text_col, x, y):            
@@ -239,7 +233,8 @@ while running:
         ball.velocity.x = -ball.velocity.x
 
     #Power Ups
-    powerUpCheck(left_paddle)
+    if not left_paddle.powerUp == True:
+        powerUpCheck(left_paddle)
     
     # Create an array of power-ups
     power_ups = [SpeedUpBall("Speed Up Ball")]
