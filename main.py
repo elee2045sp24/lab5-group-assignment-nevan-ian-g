@@ -96,9 +96,9 @@ class Ball(pygame.sprite.Sprite):
         self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*(self.velocity_magnitude_x), random.choice(self.velocity_choices)*(self.velocity_magnitude_y)) #.normalize()  #Generate sudo-random direction each start
 
     def update(self):
-        self.rect.x += self.velocity.x  
-        self.rect.y += self.velocity.y  
+        self.rect.move_ip(self.velocity.x, self.velocity.y)
         self.check_boundary()  # keeps ball stays within screen bounds
+
 
     def reset_position(self):
         self.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
