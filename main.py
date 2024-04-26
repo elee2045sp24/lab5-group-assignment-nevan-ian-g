@@ -12,9 +12,9 @@ powUp2_topic = "ugaelee2045sp24/ikg61117/powUp2"
 def on_message(client_obj, userdata, message):
     print(f"Message received: {message.payload.decode('utf8')}")
     if message.topic == powUp1_topic:
-        left_paddle.powerUp = True
+        left_paddle.power_up = True
     if message.topic == powUp2_topic:
-        right_paddle.powerUp = True
+        right_paddle.power_up = True
 
 client_id = "123"                                                                                   #MQTT setup
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1, client_id)
@@ -42,7 +42,8 @@ GREEN = (0, 255, 0)
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 #Font
-game_font = pygame.font.Font("game_font.ttf", 15) 
+game_font = pygame.font.Font("game_font.ttf", 15)
+
 
 class Paddle(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -52,7 +53,7 @@ class Paddle(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.velocity = pygame.Vector2(0, 0)  # Velocity vector for movement
-        self.powerUp = False
+        self.power_up = False
         self.number_power_ups = 2
 
     def update(self):
@@ -64,7 +65,10 @@ class Paddle(pygame.sprite.Sprite):
             self.rect.top = 0
         elif self.rect.bottom > SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
-
+    
+    def powers_up(self):
+            print(self.rect.height)
+            self.rect.inflate(5,5)
 class Score:
     def __init__(self, x, y):
         self.score = 0
@@ -135,22 +139,10 @@ class SpeedUpBall(PowerUp):
         game.velocity_magnitude_x *= 50  # Increase ball speed
         game.velocity_magnitude_y *= 50
 
-#power up function
-def powerUpCheck(Paddle):
-    if Paddle.powerUp == True:
-        start_time = time.time()
-        Paddle.number_power_ups -= 1
-        Paddle.image = pygame.Surface([10,200])
-        Paddle.image.fill(WHITE)
-        Paddle.rect = Paddle.image.get_rect()
-        #Paddle.rect.center = 
-        print (start_time - time.time())
-        if (time.time() - start_time) >= 5:
-            Paddle.image = pygame.Surface([10,100])
-            Paddle.image.fill(WHITE)
-            Paddle.rect = Paddle.image.get_rect()
-            Paddle.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-            Paddle.powerUp = False      
+# #power up function
+# def powerUpCheck(Paddle):
+#     if Paddle.powerUp == True:
+        
 
 #draw text on screen
 def draw_text(text, font, text_col, x, y):            
@@ -185,10 +177,6 @@ while running:
     # Process the frame with MediaPipe
     results = hands.process(frame_rgb)
 
-    #PowerUp logic
-    if left_paddle.powerUp == True | right_paddle.powerUp ==True:
-        start_timer = time.time()
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -208,7 +196,7 @@ while running:
         right_paddle.velocity.y = 5
     else:
         right_paddle.velocity.y = 0
-
+    
     #For loop used to find hands, draw them, and control paddles
     if results.multi_hand_landmarks:
         for hand_landmarks in results.multi_hand_landmarks:
@@ -233,16 +221,16 @@ while running:
         ball.velocity.x = -ball.velocity.x
 
     #Power Ups
-    if not left_paddle.powerUp == True:
-        powerUpCheck(left_paddle)
+    if left_paddle.power_up == True:
+        left_paddle.powers_up()
     
     # Create an array of power-ups
     power_ups = [SpeedUpBall("Speed Up Ball")]
 
     # Randomly select a power-up and apply its effect
     # Randomly select a power-up and apply its effect
-    selected_power_up = random.choice(power_ups)
-    selected_power_up.apply_effect(ball)  # Apply power-up effect
+    # selected_power_up = random.choice(power_ups)
+    # selected_power_up.apply_effect(ball)  # Apply power-up effect
 
     #Clear screen, update and draw objects
     screen.fill(BLACK)
@@ -250,6 +238,9 @@ while running:
     #Draw Text
     draw_text(f"Player 1 Score: {left_player_score.score}", game_font, WHITE, 10,10)
     draw_text(f"Player 2 Score: {right_player_score.score}", game_font, WHITE, 520, 10)
+
+    left_paddle.rect.height += 0.1
+    print(left_paddle.rect.height)
 
     all_sprites.update()
     all_sprites.draw(screen)
