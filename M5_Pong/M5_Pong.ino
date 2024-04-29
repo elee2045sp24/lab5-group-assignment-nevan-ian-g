@@ -34,7 +34,7 @@ void loop() {
   StickCP2.update(); 
   if(StickCP2.BtnA.wasPressed()){                      //if button pressed, send message on fire topic to main.py
     mqttClient.beginMessage(powUp1_topic);
-    mqttClient.print("pow_on");
+    mqttClient.print("player_2");            //change to "player_2" for second stick
     mqttClient.endMessage();
   }
 }

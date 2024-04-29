@@ -12,9 +12,10 @@ powUp2_topic = "ugaelee2045sp24/ikg61117/powUp2"
 def on_message(client_obj, userdata, message):
     print(f"Message received: {message.payload.decode('utf8')}")
     if message.topic == powUp1_topic:
-        left_paddle.power_up = True
-    if message.topic == powUp2_topic:
-        right_paddle.power_up = True
+        if message.payload.decode('utf8') == "player_1":
+            left_paddle.power_up = True
+        if message.payload.decode('utf8') == "player_2":
+            right_paddle.power_up = True
 
 client_id = "123" #MQTT setup                                                                                
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1, client_id)
@@ -142,7 +143,6 @@ class SpeedUpBall(PowerUp):
 def bigger_paddle(Paddle):
     if Paddle.power_up == True:
         Paddle.image = pygame.transform.scale_by(Paddle.image, 2)
-        print(Paddle.power_up)
         Paddle.power_up = False
         Paddle.start_time = time.time()
 
@@ -269,12 +269,12 @@ while running:
     winner_score = 1
     if (left_player_score.score == winner_score) or (right_player_score.score == winner_score):
         game_over = True
-        print("check")
         ball.velocity *= 0
         if left_player_score.score > right_player_score.score:
             draw_text(f"Player One Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
         elif right_player_score.score > left_player_score.score:
              draw_text(f"Player Two Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
+        draw_text("Make a fist to start a new game", game_font, WHITE, SCREEN_HEIGHT/2-130, SCREEN_WIDTH/2-10)
     
     #Reset Game logic
     if (game_reset == True) and (game_over == True):
