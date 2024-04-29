@@ -139,9 +139,12 @@ class SpeedUpBall(PowerUp):
         game.velocity_magnitude_x *= 50  # Increase ball speed
         game.velocity_magnitude_y *= 50
 
-# #power up function
-# def powerUpCheck(Paddle):
-#     if Paddle.powerUp == True:
+#power up function
+def powerUpCheck(Paddle):
+    if Paddle.power_up == True:
+        Paddle.image = pygame.transform.scale_by(Paddle.image, 1.8)
+        print(Paddle.power_up)
+        Paddle.power_up = False
         
 
 #draw text on screen
@@ -221,8 +224,7 @@ while running:
         ball.velocity.x = -ball.velocity.x
 
     #Power Ups
-    if left_paddle.power_up == True:
-        left_paddle.powers_up()
+    powerUpCheck(left_paddle)
     
     # Create an array of power-ups
     power_ups = [SpeedUpBall("Speed Up Ball")]
@@ -238,9 +240,6 @@ while running:
     #Draw Text
     draw_text(f"Player 1 Score: {left_player_score.score}", game_font, WHITE, 10,10)
     draw_text(f"Player 2 Score: {right_player_score.score}", game_font, WHITE, 520, 10)
-
-    left_paddle.rect.height += 0.1
-    print(left_paddle.rect.height)
 
     all_sprites.update()
     all_sprites.draw(screen)
