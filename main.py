@@ -235,13 +235,16 @@ while running:
                 # Control right paddle if hand is on the right side
                 right_paddle.velocity.y += (wrist_y_screen - SCREEN_HEIGHT // 2)*.3
             
-            #Check if thumb is extended and its tip is above the middle finger's tip
-            thumb_tip = hand_landmarks.landmark[4]
-            middle_tip = hand_landmarks.landmark[12]
-            thumb_tip_y = thumb_tip.y * frame.shape[0]
-            middle_tip_y = middle_tip.y * frame.shape[0]
-            if thumb_tip_y < middle_tip_y:
-                left_paddle.power_up = True
+             # Check fist gesture (based on landmark positions)
+            thumb_tip = hand_landmarks.landmark[4]  # Thumb tip landmark
+            index_tip = hand_landmarks.landmark[8]  # Index finger tip landmark
+            middle_tip = hand_landmarks.landmark[12]  # Middle finger tip landmark
+            ring_tip = hand_landmarks.landmark[16]  # Ring finger tip landmark
+            pinky_tip = hand_landmarks.landmark[20]  # Pinky finger tip landmark
+
+            # Check if thumb tip is below all other fingertips to detect a fist
+            if thumb_tip.y < index_tip.y and thumb_tip.y < middle_tip.y and thumb_tip.y < ring_tip.y and thumb_tip.y < pinky_tip.y:
+                game_reset = True
 
     #collide with paddles
     if pygame.sprite.spritecollide(ball, [left_paddle, right_paddle], False):
@@ -268,7 +271,7 @@ while running:
     draw_text(f"Player 2 Score: {right_player_score.score}", game_font, WHITE, 520, 10)
 
     #Winner Sequence
-    winner_score = 2
+    winner_score = 1
     if (left_player_score.score == winner_score) or (right_player_score == winner_score):
         game_over = True
         print("check")
@@ -279,10 +282,12 @@ while running:
              draw_text(f"Player Two Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
     
     #Reset Game logic
-    # if (game_reset == True) and (game_over == True):
-    #     left_player_score.score = 0
-    #     right_player_score.score = 0
-    #     ball.reset_position()
+    if (game_reset == True) and (game_over == True):
+        game_over = False
+        game_reset  = False
+        left_player_score.score = 0
+        right_player_score.score = 0
+        ball.reset_position()
 
     all_sprites.update()
     all_sprites.draw(screen)
