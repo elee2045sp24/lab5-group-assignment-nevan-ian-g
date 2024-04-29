@@ -47,6 +47,7 @@ game_reset = False
 game_over = False
 
 
+
 class Paddle(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -145,8 +146,10 @@ def timer(Paddle):
             smaller_paddle(Paddle)
         
 def speedupball():
-    ball.velocity*=4
-    #ball.velocity_magnitude_y*=5
+    speed_up_ball_function == True
+    if speed_up_ball_function == True:
+        ball.velocity*=2
+        speed_up_ball_function = True
 
 #draw text on screen
 def draw_text(text, font, text_col, x, y):            
@@ -171,6 +174,7 @@ all_sprites.add(left_paddle, right_paddle, ball)
 running = True
 while running:
     print(ball.velocity)
+    speed_up_ball_function = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -224,6 +228,8 @@ while running:
     #collide with paddles
     if pygame.sprite.spritecollide(ball, [left_paddle, right_paddle], False):
         ball.velocity.x = -ball.velocity.x
+        if speed_up_ball_function == True:
+            speed_up_ball_function == False
 
     #Increase Paddle Size Power Up
     for paddle in paddles:
@@ -247,22 +253,15 @@ while running:
     draw_text(f"Player 1 Score: {left_player_score.score}", game_font, WHITE, 10,10)
     draw_text(f"Player 2 Score: {right_player_score.score}", game_font, WHITE, 520, 10)
 
-<<<<<<< HEAD
     # Winner Sequence
     winner_score = 10
     if left_player_score.score == winner_score or right_player_score.score == winner_score:
-=======
-    #Winner Sequence
-    winner_score = 1
-    if (left_player_score.score == winner_score) or (right_player_score.score == winner_score):
->>>>>>> 3402d7130347110e9d3460f480c5a835bac908a3
         game_over = True
         print("check")
         ball.velocity *= 0
         if left_player_score.score > right_player_score.score:
             draw_text(f"Player One Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
         elif right_player_score.score > left_player_score.score:
-<<<<<<< HEAD
             draw_text(f"Player Two Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
         # Record the time when the winning message is displayed
         win_display_time = pygame.time.get_ticks()
@@ -277,18 +276,6 @@ while running:
             #right_player_score.score = 0
             #ball.reset_position()
 
-=======
-             draw_text(f"Player Two Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
-    
-    #Reset Game logic
-    if (game_reset == True) and (game_over == True):
-        game_over = False
-        game_reset  = False
-        left_player_score.score = 0
-        right_player_score.score = 0
-        ball.reset_position()
-        print(game_reset,game_over)
->>>>>>> 3402d7130347110e9d3460f480c5a835bac908a3
 
     all_sprites.update()
     all_sprites.draw(screen)
