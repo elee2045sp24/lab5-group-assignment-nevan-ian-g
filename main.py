@@ -17,7 +17,7 @@ def on_message(client_obj, userdata, message):
     if message.topic == powUp2_topic:
         right_paddle.power_up = True
 
-client_id = "123"                                                                                   #MQTT setup
+client_id = "123" #MQTT setup                                                                                
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1, client_id)
 client.username_pw_set("class_user", "class_password")
 client.connect("mqtt.ugavel.com")
@@ -73,6 +73,7 @@ class Paddle(pygame.sprite.Sprite):
     def powers_up(self):
             print(self.rect.height)
             self.rect.inflate(5,5)
+
 class Score:
     def __init__(self, x, y):
         self.score = 0
@@ -132,11 +133,6 @@ class PowerUp:
 
     def apply_effect(self, game):
         pass  # Implement this method in subclasses
-
-# Define specific power-up classes
-#class IncreasePaddleSize(PowerUp):
-#    def apply_effect(self, game):
- #       game.left_paddle.size += 1
 
 class SpeedUpBall(PowerUp):
     def apply_effect(self, game):
@@ -271,9 +267,10 @@ while running:
     draw_text(f"Player 2 Score: {right_player_score.score}", game_font, WHITE, 520, 10)
 
     #Winner Sequence
-    winner_score = 1
-    if (left_player_score.score == winner_score) or (right_player_score == winner_score):
+    winner_score = 10
+    if (left_player_score.score == winner_score) or (right_player_score.score == winner_score):
         game_over = True
+        game_reset = True
         print("check")
         ball.velocity *= 0
         if left_player_score.score > right_player_score.score:
