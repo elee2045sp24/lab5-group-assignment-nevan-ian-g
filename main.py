@@ -44,6 +44,8 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 #Font
 game_font = pygame.font.Font("game_font.ttf", 15)
+game_reset = False
+game_over = False
 
 
 class Paddle(pygame.sprite.Sprite):
@@ -153,7 +155,7 @@ def smaller_paddle(Paddle):
     Paddle.image = pygame.transform.scale_by(Paddle.image, 0.5)
 
 def timer(Paddle):
-    elapsed_duration = 5
+    elapsed_duration = 10
     if Paddle.start_time is not None:
         elapsed_time = time.time() - Paddle.start_time
         if elapsed_time >= elapsed_duration:
@@ -232,17 +234,23 @@ while running:
             else:
                 # Control right paddle if hand is on the right side
                 right_paddle.velocity.y += (wrist_y_screen - SCREEN_HEIGHT // 2)*.3
+            
+            #Check if thumb is extended and its tip is above the middle finger's tip
+            thumb_tip = hand_landmarks.landmark[4]
+            middle_tip = hand_landmarks.landmark[12]
+            thumb_tip_y = thumb_tip.y * frame.shape[0]
+            middle_tip_y = middle_tip.y * frame.shape[0]
+            if thumb_tip_y < middle_tip_y:
+                left_paddle.power_up = True
 
     #collide with paddles
     if pygame.sprite.spritecollide(ball, [left_paddle, right_paddle], False):
         ball.velocity.x = -ball.velocity.x
 
-    #Power Ups
+    #Increase Paddle Size Power Up
     for paddle in paddles:
         bigger_paddle(paddle)
         timer(paddle)
-    # bigger_paddle(left_paddle)
-    # timer(left_paddle)
     
     # Create an array of power-ups
     power_ups = [SpeedUpBall("Speed Up Ball")]
@@ -258,6 +266,23 @@ while running:
     #Draw Text
     draw_text(f"Player 1 Score: {left_player_score.score}", game_font, WHITE, 10,10)
     draw_text(f"Player 2 Score: {right_player_score.score}", game_font, WHITE, 520, 10)
+
+    #Winner Sequence
+    winner_score = 2
+    if (left_player_score.score == winner_score) or (right_player_score == winner_score):
+        game_over = True
+        print("check")
+        ball.velocity *= 0
+        if left_player_score.score > right_player_score.score:
+            draw_text(f"Player One Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
+        elif right_player_score.score > left_player_score.score:
+             draw_text(f"Player Two Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
+    
+    #Reset Game logic
+    # if (game_reset == True) and (game_over == True):
+    #     left_player_score.score = 0
+    #     right_player_score.score = 0
+    #     ball.reset_position()
 
     all_sprites.update()
     all_sprites.draw(screen)
