@@ -13,6 +13,7 @@ def on_message(client_obj, userdata, message):
     print(f"Message received: {message.payload.decode('utf8')}")
     if message.topic == powUp1_topic:
         left_paddle.power_up = True
+
     if message.topic == powUp2_topic:
         right_paddle.power_up = True
 
@@ -55,6 +56,7 @@ class Paddle(pygame.sprite.Sprite):
         self.velocity = pygame.Vector2(0, 0)  # Velocity vector for movement
         self.power_up = False
         self.number_power_ups = 2
+        self.start_time = None
 
     def update(self):
         self.rect.move_ip(self.velocity)  # Move the paddle based on velocity
@@ -97,7 +99,7 @@ class Ball(pygame.sprite.Sprite):
         self.velocity_choices = [1, -1]
         self.velocity_magnitude_x = 3
         self.velocity_magnitude_y = 3
-        self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*(self.velocity_magnitude_x), random.choice(self.velocity_choices)*(self.velocity_magnitude_y)) #.normalize()  #Generate sudo-random direction each start
+        self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*(self.velocity_magnitude_x), random.choice(self.velocity_choices)*(self.velocity_magnitude_y))  #Generate sudo-random direction each start
 
     def update(self):
         self.rect.move_ip(self.velocity.x, self.velocity.y)
@@ -140,11 +142,23 @@ class SpeedUpBall(PowerUp):
         game.velocity_magnitude_y *= 50
 
 #power up function
-def powerUpCheck(Paddle):
+def bigger_paddle(Paddle):
     if Paddle.power_up == True:
-        Paddle.image = pygame.transform.scale_by(Paddle.image, 1.8)
+        Paddle.image = pygame.transform.scale_by(Paddle.image, 2)
         print(Paddle.power_up)
         Paddle.power_up = False
+        Paddle.start_time = time.time()
+
+def smaller_paddle(Paddle):
+    Paddle.image = pygame.transform.scale_by(Paddle.image, 0.5)
+
+def timer(Paddle):
+    elapsed_duration = 5
+    if Paddle.start_time is not None:
+        elapsed_time = time.time() - Paddle.start_time
+        if elapsed_time >= elapsed_duration:
+            Paddle.start_time = None
+            smaller_paddle(Paddle)
         
 
 #draw text on screen
@@ -160,7 +174,7 @@ pygame.display.set_caption("Magic Pong")
 left_paddle = Paddle(50, SCREEN_HEIGHT // 2)
 right_paddle = Paddle(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2)
 
-
+paddles = [left_paddle, right_paddle] 
 
 # Group for sprites
 all_sprites = pygame.sprite.Group()
@@ -224,7 +238,11 @@ while running:
         ball.velocity.x = -ball.velocity.x
 
     #Power Ups
-    powerUpCheck(left_paddle)
+    for paddle in paddles:
+        bigger_paddle(paddle)
+        timer(paddle)
+    # bigger_paddle(left_paddle)
+    # timer(left_paddle)
     
     # Create an array of power-ups
     power_ups = [SpeedUpBall("Speed Up Ball")]
