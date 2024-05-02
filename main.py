@@ -103,6 +103,7 @@ class Ball(pygame.sprite.Sprite):
         self.velocity_magnitude_x = 8
         self.velocity_magnitude_y = 8
         self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*(self.velocity_magnitude_x), random.choice(self.velocity_choices)*(self.velocity_magnitude_y))  #Generate sudo-random direction each start
+        self.original_velocity = self.velocity
 
     def update(self):
         self.rect.move_ip(self.velocity.x, self.velocity.y)
@@ -145,12 +146,13 @@ def timer(Paddle):
             Paddle.start_time = None
             smaller_paddle(Paddle)
 
-speed_up_ball_function = False
+#speed_up_ball_function = False
 
 def speedupball(should_speed_up):
-    global speed_up_ball_function
-    speed_up_ball_function = True
-    ball.velocity*=2
+    if should_speed_up:
+        ball.velocity*=2
+    else:
+        ball.velocity = ball.original_velocity
 #draw text on screen
 def draw_text(text, font, text_col, x, y):            
     img = font.render(text, True, text_col)
@@ -228,9 +230,8 @@ while running:
     #collide with paddles
     if pygame.sprite.spritecollide(ball, [left_paddle, right_paddle], False):
         ball.velocity.x = -ball.velocity.x
-        print(speed_up_ball_function)
-        if speed_up_ball_function == True:
-            speedupball(False)
+        speedupball(False)
+        
 
         
 
