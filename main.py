@@ -144,13 +144,13 @@ def timer(Paddle):
         if elapsed_time >= elapsed_duration:
             Paddle.start_time = None
             smaller_paddle(Paddle)
-        
-def speedupball():
-    speed_up_ball_function == True
-    if speed_up_ball_function == True:
-        ball.velocity*=2
-        speed_up_ball_function = True
 
+speed_up_ball_function = False
+
+def speedupball(should_speed_up):
+    global speed_up_ball_function
+    speed_up_ball_function = True
+    ball.velocity*=2
 #draw text on screen
 def draw_text(text, font, text_col, x, y):            
     img = font.render(text, True, text_col)
@@ -174,13 +174,13 @@ all_sprites.add(left_paddle, right_paddle, ball)
 running = True
 while running:
     print(ball.velocity)
-    speed_up_ball_function = False
+    #speed_up_ball_function = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
-                speedupball()
+                speedupball(True)
                 print("this is a test")
     #print(ball.velocity_magnitude_y)
     # Capture frame from webcam
@@ -228,23 +228,17 @@ while running:
     #collide with paddles
     if pygame.sprite.spritecollide(ball, [left_paddle, right_paddle], False):
         ball.velocity.x = -ball.velocity.x
+        print(speed_up_ball_function)
         if speed_up_ball_function == True:
-            speed_up_ball_function == False
+            speedupball(False)
+
+        
 
     #Increase Paddle Size Power Up
     for paddle in paddles:
         bigger_paddle(paddle)
         timer(paddle)
     
-    # Create an array of power-ups
-    # power_ups = [SpeedUpBall("Speed Up Ball")]
-
-
-
-    # Randomly select a power-up and apply its effect
-    # Randomly select a power-up and apply its effect
-    # selected_power_up = random.choice(power_ups)
-    # selected_power_up.apply_effect(ball)  # Apply power-up effect
 
     #Clear screen, update and draw objects
     screen.fill(BLACK)
