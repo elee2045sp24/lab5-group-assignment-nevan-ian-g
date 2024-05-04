@@ -48,6 +48,7 @@ game_reset = False
 game_over = False
 
 
+
 class Paddle(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -103,6 +104,7 @@ class Ball(pygame.sprite.Sprite):
         self.velocity_magnitude_x = 8
         self.velocity_magnitude_y = 8
         self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*(self.velocity_magnitude_x), random.choice(self.velocity_choices)*(self.velocity_magnitude_y))  #Generate sudo-random direction each start
+        self.original_velocity = self.velocity
 
     def update(self):
         self.rect.move_ip(self.velocity.x, self.velocity.y)
@@ -143,11 +145,14 @@ def timer(Paddle):
         if elapsed_time >= elapsed_duration:
             Paddle.start_time = None
             smaller_paddle(Paddle)
-        
-def speedupball():
-    ball.velocity*=4
-    #ball.velocity_magnitude_y*=5
 
+#speed_up_ball_function = False
+
+def speedupball(should_speed_up):
+    if should_speed_up:
+        ball.velocity*=2
+    else:
+        ball.velocity = ball.original_velocity
 #draw text on screen
 def draw_text(text, font, text_col, x, y):            
     img = font.render(text, True, text_col)
@@ -171,12 +176,13 @@ all_sprites.add(left_paddle, right_paddle, ball)
 running = True
 while running:
     print(ball.velocity)
+    #speed_up_ball_function = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
-                speedupball()
+                speedupball(True)
                 print("this is a test")
     #print(ball.velocity_magnitude_y)
     # Capture frame from webcam
@@ -224,21 +230,16 @@ while running:
     #collide with paddles
     if pygame.sprite.spritecollide(ball, [left_paddle, right_paddle], False):
         ball.velocity.x = -ball.velocity.x
+        speedupball(False)
+        
+
+        
 
     #Increase Paddle Size Power Up
     for paddle in paddles:
         bigger_paddle(paddle)
         timer(paddle)
     
-    # Create an array of power-ups
-    # power_ups = [SpeedUpBall("Speed Up Ball")]
-
-
-
-    # Randomly select a power-up and apply its effect
-    # Randomly select a power-up and apply its effect
-    # selected_power_up = random.choice(power_ups)
-    # selected_power_up.apply_effect(ball)  # Apply power-up effect
 
     #Clear screen, update and draw objects
     screen.fill(BLACK)
@@ -247,21 +248,14 @@ while running:
     draw_text(f"Player 1 Score: {left_player_score.score}", game_font, WHITE, 10,10)
     draw_text(f"Player 2 Score: {right_player_score.score}", game_font, WHITE, 520, 10)
 
-<<<<<<< HEAD
     # Winner Sequence
     winner_score = 10
     if left_player_score.score == winner_score or right_player_score.score == winner_score:
-=======
-    #Winner Sequence
-    winner_score = 1
-    if (left_player_score.score == winner_score) or (right_player_score.score == winner_score):
->>>>>>> 3402d7130347110e9d3460f480c5a835bac908a3
         game_over = True
         ball.velocity *= 0
         if left_player_score.score > right_player_score.score:
             draw_text(f"Player One Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
         elif right_player_score.score > left_player_score.score:
-<<<<<<< HEAD
             draw_text(f"Player Two Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
         # Record the time when the winning message is displayed
         win_display_time = pygame.time.get_ticks()
@@ -276,6 +270,7 @@ while running:
             #right_player_score.score = 0
             #ball.reset_position()
 
+<<<<<<< HEAD
 =======
              draw_text(f"Player Two Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
         draw_text("Make a fist to start a new game", game_font, WHITE, SCREEN_HEIGHT/2-130, SCREEN_WIDTH/2-10)
@@ -289,6 +284,8 @@ while running:
         ball.reset_position()
         print(game_reset,game_over)
 >>>>>>> 3402d7130347110e9d3460f480c5a835bac908a3
+=======
+>>>>>>> 369d2e487bbc9d7f69bf9071899c71d1bd432cf6
 
     all_sprites.update()
     all_sprites.draw(screen)
