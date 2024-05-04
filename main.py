@@ -100,8 +100,8 @@ class Ball(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         self.velocity_choices = [1, -1]
-        self.velocity_magnitude_x = 3
-        self.velocity_magnitude_y = 3
+        self.velocity_magnitude_x = 8
+        self.velocity_magnitude_y = 8
         self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*(self.velocity_magnitude_x), random.choice(self.velocity_choices)*(self.velocity_magnitude_y))  #Generate sudo-random direction each start
 
     def update(self):
@@ -126,19 +126,6 @@ class Ball(pygame.sprite.Sprite):
 # Create ball
 ball = Ball()
 
-# Define Power-up Class
-class PowerUp:
-    def __init__(self, name):
-        self.name = name
-
-    def apply_effect(self, game):
-        pass  # Implement this method in subclasses
-
-class SpeedUpBall(PowerUp):
-    def apply_effect(self, game):
-        game.velocity_magnitude_x *= 50  # Increase ball speed
-        game.velocity_magnitude_y *= 50
-
 #power up function
 def bigger_paddle(Paddle):
     if Paddle.power_up == True:
@@ -157,6 +144,9 @@ def timer(Paddle):
             Paddle.start_time = None
             smaller_paddle(Paddle)
         
+def speedupball():
+    ball.velocity*=4
+    #ball.velocity_magnitude_y*=5
 
 #draw text on screen
 def draw_text(text, font, text_col, x, y):            
@@ -180,6 +170,15 @@ all_sprites.add(left_paddle, right_paddle, ball)
 # Main loop
 running = True
 while running:
+    print(ball.velocity)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:
+                speedupball()
+                print("this is a test")
+    #print(ball.velocity_magnitude_y)
     # Capture frame from webcam
     ret, frame = cap.read()
     if not ret:
@@ -191,26 +190,7 @@ while running:
     # Process the frame with MediaPipe
     results = hands.process(frame_rgb)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
 
-    # Handle paddle movement
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
-        left_paddle.velocity.y = -5
-    elif keys[pygame.K_s]:
-        left_paddle.velocity.y = 5
-    else:
-        left_paddle.velocity.y = 0
-
-    if keys[pygame.K_UP]:
-        right_paddle.velocity.y = -5
-    elif keys[pygame.K_DOWN]:
-        right_paddle.velocity.y = 5
-    else:
-        right_paddle.velocity.y = 0
-    
     #For loop used to find hands, draw them, and control paddles
     if results.multi_hand_landmarks:
         for hand_landmarks in results.multi_hand_landmarks:
@@ -230,7 +210,7 @@ while running:
                 # Control right paddle if hand is on the right side
                 right_paddle.velocity.y += (wrist_y_screen - SCREEN_HEIGHT // 2)*.3
             
-             # Check fist gesture (based on landmark positions)
+            # Check fist gesture (based on landmark positions)
             thumb_tip = hand_landmarks.landmark[4]  # Thumb tip landmark
             index_tip = hand_landmarks.landmark[8]  # Index finger tip landmark
             middle_tip = hand_landmarks.landmark[12]  # Middle finger tip landmark
@@ -251,7 +231,9 @@ while running:
         timer(paddle)
     
     # Create an array of power-ups
-    power_ups = [SpeedUpBall("Speed Up Ball")]
+    # power_ups = [SpeedUpBall("Speed Up Ball")]
+
+
 
     # Randomly select a power-up and apply its effect
     # Randomly select a power-up and apply its effect
@@ -265,14 +247,36 @@ while running:
     draw_text(f"Player 1 Score: {left_player_score.score}", game_font, WHITE, 10,10)
     draw_text(f"Player 2 Score: {right_player_score.score}", game_font, WHITE, 520, 10)
 
+<<<<<<< HEAD
+    # Winner Sequence
+    winner_score = 10
+    if left_player_score.score == winner_score or right_player_score.score == winner_score:
+=======
     #Winner Sequence
     winner_score = 1
     if (left_player_score.score == winner_score) or (right_player_score.score == winner_score):
+>>>>>>> 3402d7130347110e9d3460f480c5a835bac908a3
         game_over = True
         ball.velocity *= 0
         if left_player_score.score > right_player_score.score:
             draw_text(f"Player One Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
         elif right_player_score.score > left_player_score.score:
+<<<<<<< HEAD
+            draw_text(f"Player Two Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
+        # Record the time when the winning message is displayed
+        win_display_time = pygame.time.get_ticks()
+
+    # Reset Game logic
+    if game_reset == True and game_over == True:
+        # Check if enough time has passed since displaying the winning message
+        if pygame.time.get_ticks() - win_display_time == 3000:  # 3000 milliseconds = 3 seconds
+            game_over = False
+            game_reset = False
+            #left_player_score.score = 0
+            #right_player_score.score = 0
+            #ball.reset_position()
+
+=======
              draw_text(f"Player Two Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
         draw_text("Make a fist to start a new game", game_font, WHITE, SCREEN_HEIGHT/2-130, SCREEN_WIDTH/2-10)
     
@@ -284,6 +288,7 @@ while running:
         right_player_score.score = 0
         ball.reset_position()
         print(game_reset,game_over)
+>>>>>>> 3402d7130347110e9d3460f480c5a835bac908a3
 
     all_sprites.update()
     all_sprites.draw(screen)
