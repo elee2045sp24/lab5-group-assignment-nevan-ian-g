@@ -14,8 +14,8 @@ void setup() {
   auto cfg = M5.config();
   StickCP2.begin(cfg);
   //connectWifi(); // runs a captive portal (very opinionated)
-  connectToEnterpriseWifi(); // note, must modify SimpleWifi.ino
-  //connectToPersonalWifi(); //this launches an opinionated wifi setup (see WiFiParts.ino)
+  //connectToEnterpriseWifi(); // note, must modify SimpleWifi.ino
+  connectToPersonalWifi(); //this launches an opinionated wifi setup (see WiFiParts.ino)
   StickCP2.Display.clear(); //clear stuff from wifi connect
 
   //MQTT setup
@@ -34,7 +34,7 @@ void loop() {
   StickCP2.update(); 
   if(StickCP2.BtnA.wasPressed()){                      //if button pressed, send message on fire topic to main.py
     mqttClient.beginMessage(powUp1_topic);
-    mqttClient.print("player_2");            //change to "player_2" for second stick
+    mqttClient.print("player_1");            //change to "player_2" for second stick
     mqttClient.endMessage();
   }
 }
