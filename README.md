@@ -38,7 +38,9 @@ along those lines. I built the logic behind the ball physics, making the balls b
 the top and bottom boundaries as well as the paddles, but increase score when colliding
 with the left and right boundaries. We had some trouble getting the score to work, and
 I spent a good bit of time troubleshooting that. I also spent a good chunk of time 
-testing our code.
+testing our code. I also did most of the logistical setup. I took care of creating
+our group github from the github classroom, getting Ian on board, and writing the 
+README.
 
 Ian did the opencv/mediapipe/computer vision part and the MQTT part. 
 
