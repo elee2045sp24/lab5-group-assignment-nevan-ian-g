@@ -197,6 +197,22 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     
+    #keys used as a backup
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_w]:
+        left_paddle.velocity.y = -5
+    elif keys[pygame.K_s]:
+        left_paddle.velocity.y = 5
+    else:
+        left_paddle.velocity.y = 0
+
+    if keys[pygame.K_UP]:
+        right_paddle.velocity.y = -5
+    elif keys[pygame.K_DOWN]:
+        right_paddle.velocity.y = 5
+    else:
+        right_paddle.velocity.y = 0
+    
     #For loop used to find hands, draw them, and control paddles
     if results.multi_hand_landmarks:
         for hand_landmarks in results.multi_hand_landmarks:
@@ -282,20 +298,6 @@ while running:
         elif right_player_score.score > left_player_score.score:
              draw_text(f"Player Two Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
         draw_text("Make a fist to start a new game", game_font, WHITE, SCREEN_HEIGHT/2-130, SCREEN_WIDTH/2-10)
-
-
-        # # Reset Game logic
-    # if game_reset == True and game_over == True:
-    #     # Check if enough time has passed since displaying the winning message
-    #     if pygame.time.get_ticks() - win_display_time == 3000:  # 3000 milliseconds = 3 seconds
-    #         game_over = False
-    #         game_reset = False
-    #         #left_player_score.score = 0
-    #         #right_player_score.score = 0
-    #         #ball.reset_position()
-
-    #         draw_text(f"Player Two Wins!", game_font, WHITE, SCREEN_HEIGHT/2-20, SCREEN_WIDTH/2-40)
-    #         draw_text("Make a fist to start a new game", game_font, WHITE, SCREEN_HEIGHT/2-130, SCREEN_WIDTH/2-10)
 
     #Reset Game logic
     if (game_reset == True) and (game_over == True):
