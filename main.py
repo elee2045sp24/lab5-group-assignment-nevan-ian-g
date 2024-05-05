@@ -13,10 +13,10 @@ powUp2_topic = "ugaelee2045sp24/ikg61117/powUp2"
 def on_message(client_obj, userdata, message):
     print(f"Message received: {message.payload.decode('utf8')}")
     if message.topic == powUp1_topic:
-        if left_paddle.power_up_on == False and left_paddle.has_power_up == True:
+        if left_paddle.power_up_on == False and left_paddle.has_power_up == True and ball.ball_pw_on == False:
             left_paddle.power_up = True
     if message.topic == powUp2_topic:
-        if right_paddle.power_up != True and right_paddle.has_power_up == True:
+        if right_paddle.power_up == False and right_paddle.has_power_up == True and ball.ball_pw_on == False:
             right_paddle.power_up = True
 
 client_id = "123"                                                                                   #MQTT setup
@@ -104,6 +104,7 @@ class Ball(pygame.sprite.Sprite):
         self.velocity_magnitude_y = 4
         self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*(self.velocity_magnitude_x), random.choice(self.velocity_choices)*(self.velocity_magnitude_y)) #.normalize()  #Generate sudo-random direction each start
         self.original_velocity = self.velocity
+        self.ball_pw_on = False
 
     def update(self):
         self.rect.move_ip(self.velocity.x, self.velocity.y)
@@ -112,6 +113,8 @@ class Ball(pygame.sprite.Sprite):
     def reset_position(self):
         self.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         self.velocity = pygame.Vector2(random.choice(self.velocity_choices)*(self.velocity_magnitude_x), random.choice(self.velocity_choices)*(self.velocity_magnitude_y)) #.normalize()
+        self.ball_pw_on = False
+        
 
     def check_boundary(self):
         if self.rect.top <= 0 or self.rect.bottom >= SCREEN_HEIGHT:
@@ -150,12 +153,12 @@ def timer(Paddle):
 
 def speedupball(Paddle):
     if Paddle.power_up == True and Paddle.power_up_choice == 2:
-        Paddle.power_up_on = True
+        ball.ball_pw_on = True
         ball.velocity *= 2
         Paddle.power_up = False 
         Paddle.has_power_up = False
         Paddle.power_up_choice = None
-        Paddle.power_up_on = False   
+        #Paddle.power_up_on = False   
 
 #draw text on screen
 def draw_text(text, font, text_col, x, y):            
@@ -251,7 +254,7 @@ while running:
 
     # Randomly select a power-up and apply its effect
     for paddle in paddles:
-        if np.random.random() < 0.003:
+        if np.random.random() < 0.005:
             if paddle.has_power_up == False:
                 paddle.has_power_up = True
                 power_up_choices = [1,2]
@@ -318,6 +321,8 @@ while running:
         game_reset  = False
         left_player_score.score = 0
         right_player_score.score = 0
+        left_paddle.has_power_up = False
+        right_paddle.has_power_up = False
         ball.reset_position()
 
     all_sprites.update()
