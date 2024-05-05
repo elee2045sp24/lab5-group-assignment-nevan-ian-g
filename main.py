@@ -13,10 +13,10 @@ powUp2_topic = "ugaelee2045sp24/ikg61117/powUp2"
 def on_message(client_obj, userdata, message):
     print(f"Message received: {message.payload.decode('utf8')}")
     if message.topic == powUp1_topic:
-        if left_paddle.power_up_on == False and left_paddle.has_power_up == True and ball.ball_pw_on == False:
+        if left_paddle.power_up_on == False and left_paddle.has_power_up == True:
             left_paddle.power_up = True
     if message.topic == powUp2_topic:
-        if right_paddle.power_up == False and right_paddle.has_power_up == True and ball.ball_pw_on == False:
+        if right_paddle.power_up_on == False and right_paddle.has_power_up == True:
             right_paddle.power_up = True
 
 client_id = "123"                                                                                   #MQTT setup
@@ -196,24 +196,6 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
-    # Handle paddle movement
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
-        left_paddle.velocity.y = -5
-    elif keys[pygame.K_s]:
-        left_paddle.velocity.y = 5
-    else:
-        left_paddle.velocity.y = 0
-
-    if keys[pygame.K_UP]:
-        right_paddle.velocity.y = -5
-    elif keys[pygame.K_DOWN]:
-        right_paddle.velocity.y = 5
-    else:
-        right_paddle.velocity.y = 0
-    if keys[pygame.K_SPACE]:
-        left_paddle.power_up = True
     
     #For loop used to find hands, draw them, and control paddles
     if results.multi_hand_landmarks:
