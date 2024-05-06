@@ -24,6 +24,7 @@ computer vision, and human-computer interfaces to create a fun and innovative ve
 classic game of pong.
 
 A video demonstrating how the project works: https://youtu.be/1fqzbXvBmoc
+This video is a more direct view of the screen demonstrating the power-ups: https://youtu.be/lCKlo412CAM
 Note: In the video, it may seem that my M5 is connected to Ian's laptop. It is simply
 charging, it's not communicating through serial. Like Ian's M5, mine is communicating with
 the game using the wireless MQTT protocol.
