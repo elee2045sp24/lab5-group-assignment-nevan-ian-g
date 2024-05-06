@@ -23,10 +23,11 @@ which will reset the game. This lab effectively utilizes communication, simulati
 computer vision, and human-computer interfaces to create a fun and innovative version of the
 classic game of pong.
 
-A video demonstrating how the project works: 
+A video demonstrating how the project works: https://youtu.be/1fqzbXvBmoc
 Note: In the video, it may seem that my M5 is connected to Ian's laptop. It is simply
 charging, it's not communicating through serial. Like Ian's M5, mine is communicating with
 the game using the wireless MQTT protocol.
+
 
 A description of the work completed by each group member. Only a very small portion of this can be “co-design”.
 Whoever’s keys were on the keyboard for the work that gets done gets to take the credit:
@@ -42,7 +43,7 @@ testing our code. I also did most of the logistical setup. I took care of creati
 our group github from the github classroom, getting Ian on board, and writing the 
 README.
 
-Ian did the opencv/mediapipe/computer vision part and the MQTT part. 
+Ian: did the opencv/mediapipe/computer vision part and the MQTT part. I first had to do some research as to how to use Open CV/mediapipe for this project. Luckily there are some good resources about how to use open CVs hand recognition feature. There is a built in map with hand 'landmarks' that can be used to track specific points on the hand. From then on it was a matter of using specific points for specific actions. I used open cv to track the hands for paddle control and start a new game by making a fist. I also incoporated the M5Stick to act as a power up controller. The basic of this were relatively simple as it used past MQTT projects as a template. I implemented the Mega Paddle power up with timer which took some more thinking since functions inside a pygame loop can be called repeatedly without proper precautions. I wrote the logic behind randomly assiging power-ups to the players. For this part effort was needed to iron out issues like players only being able to use a power up once, or making sure that the MQTT message properly activated the power up for each player. I also wrote the winner sequence that happens at the end of a game and determines the winner.
 
 We both came together a few times to test the code, brainstorm solutions to issues we faced,
 and make the submission video.
